@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
+  <title>Shie's Special</title>
+  <link rel="icon" type="png" href="logo.png"/>
+
+
+  <style>
+    body{
+      background-image: url("dk.jpg");
+      overflow: auto;
+    }
+    .container {
+			max-width: 1900px;
+      max-height: fit-content;
+		}
+    #pix{
+      float: left;
+      width: 600px;
+      position: relative;
+    }
+    #header{
+      height: 80px;
+    }
+    #branddd{
+      position: relative;
+      max-width: 500px;
+      margin-right: 100px;
+
+    
+
+    }
+
+  </style>
+
+
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-warning" id="header">
+    <div class="container-fluid">
+      <img src="logo.png" class="navbar-brand" height="80" width="80">
+      <button class="navbar-toggler" type="button" id="bttt" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="menu.html">Menu</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About Us</a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          
+          <li class="nav-item">
+            <a class="nav-link" href="register.php">Sign Up</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-default btn-rounded " data-bs-toggle="modal" data-bs-target="#myModal">Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container" id="branddd">
+    <img src="brandd.png" >
+  </div>
+
+  <div class="fixed-bottom z-n1 position-absolute" id="pix">
+    <img id="pix" src="crop.png" >
+  </div>
+
+  
+  
+  <div class="modal" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <div class="modal-header">
+          <h4 class="modal-title">Login</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        
+
+        <form action="validation.php" method="POST">
+        <div class="modal-body">
+          <div class="mb-3 mt-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" class="form-control" id="email" name="email_add" placeholder="Enter email" name="email">
+          </div>
+          <div class="mb-3">
+            <label for="pwd" class="form-label">Password:</label>
+            <input type="password" class="form-control" id="pwd" name="password" placeholder="Enter password" name="pwd">
+          
+          <div class="form mb-3">
+            <label class="form-label" for="pwd">
+              <input type="checkbox" onclick="myFunction()"> Show Password
+            </label>
+          </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">LOGIN</button>
+        </div>
+  
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+  
+  <script>
+    function myFunction() {
+        var x = document.getElementById("pwd");
+        if (x.type === "password") {
+          x.type = "text";
+        } else {
+          x.type = "password";
+        }
+      }
+      </script>
+</body>
+</html>

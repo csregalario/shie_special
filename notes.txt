@@ -1,0 +1,58 @@
+
+*visitor page
+makikita so sign up -> log in ->home page
+
+*home page 
+wala ng sign up -> log in pero my add to cart na -> order now button -> log out 
+
+*menu page -> add to cart -> buy now 
+about us
+*sign up -> log in -> home page
+*log in -> home page
+
+
+*admin site 
+
+*menu page
+select size -> add to cart or buy now
+
+
+
+
+
+
+fix the connection 
+*visitor page
+
+home page -> 	HOME MENU ABOUTuS SIGNuP LOGIN ===
+menu -> nav bar HOME MENU ABOUTuS SIGNUP LOGIN ====
+About Us
+Sign Up -> 	HOME MENU ABOUTuS   ===
+then after the sign up LOGIN PAGE
+LOGIN ->	HOME MENU ABOUTuS ===
+
+
+
+ORDERS MODULE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
