@@ -20,210 +20,193 @@ if(isset($_GET['signout'])){
     <!-- Link to Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
 
-    <style>
-      *{
-        padding: 0;
-        margin: 0;
-        font-family: 'helvetica', sans-serif;
-      }
-    body{
-        overflow: auto;
-      }
-      
-        .accordion-content {
-            height: 50%;
-            overflow-y: auto;
-        }
 
-    </style>
-</head>
-<!-- Sidebar navigation -->
-    <div class="container-fluid">
-       <div class="row">
-          <div class="px-0 bg-transparent text-dark col-md-3 col-lg-3 d-none d-md-block sidebar h-100">
-             <div class="card pt-3">
-             <div class="text-center">
-             <img src="icon.jpg" style="border-radius: 50%; width: 100px;" alt="" class="img-responsive d-block mx-auto mt-1 rounded-circle">   
-                <h5 style="margin-top:10px;">Admin</h5>
-                   <div class="card-body">
-                      <div class="mx-auto d-block text-center">
-                         <?php if(isset($_SESSION['user'])): ?>
-                            <h6 class="display-6">@<?php echo $_SESSION['user']['username'];?></h6>
-                         <?php endif; ?>  
-                                <a href="profile" class="btn btn-link">Profile</a> ◉
-                                <a href="signout" class="btn btn-link">Sign out</a> 
-                      </div>
-                   </div>
+<style>
+body{
+      background-image: url("dk.jpg");
+      overflow: auto;
+    }
+    .container {
+			max-width: 1900px;
+      max-height: fit-content;
+		}
+    #pix{
+      float: left;
+      width: 600px;
+      position: relative;
+    }
+   
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: 'helvetica', sans-serif;
+  }
+  body {
+    overflow: auto;
+  }
+  
+  .accordion-content {
+    height: 50%;
+    overflow-y: auto;
+  }
+  
+  /* add the following CSS rules */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    background-color: #f8f9fa;
+  }
+  
+  .content {
+    margin-left: 250px;
+  }
+  
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+    .content {
+      margin-left: 0;
+    }
+  }
+  .btn {
+  display: inline-block;
+  padding: 5px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #000;
+  background-color: #ddd;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
 
-                   <hr>
+.btn:hover {
+  background-color: #ddd;
+}
+
+.btn.pressed {
+  background-color: #ccc;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+
+</style>
+
+<body>
+  <div class="container-fluid">
+     <div class="row">
+           <div class="px-0 bg-transparent text-dark col-md-4col-lg-3 d-none d-md-block sidebar h-100">
+              <div class="card pt-10">
+                 <div class="text-center">
+                    <img src="icon.jpg" style="border-radius: 50%; width: 100px;" alt="" class="img-responsive d-block mx-auto mt-1 rounded-circle">   
+                       <h5 style="margin-top:10px;">Admin</h5>
+                          <div class="card-body">
+                             <div class="mx-auto d-block text-center">
+                                <?php if(isset($_SESSION['user'])): ?>
+                                <h6 class="display-6">@<?php echo $_SESSION['user']['username'];?></h6>
+                                <?php endif; ?>  
+                                <a href="profile" class="btn btn">Profile</a> ◉
+                                <a href="signout" class="btn btn">Sign out</a> 
+                             </div>
+                          </div>
+                 </div>
+                 <hr>
                    <div id="accordion">
-                      <div class="card">
-                         <div class="card-header" id="headingOne">
-                            <h5 class="mb-0">
-                               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    Manage Orders
-                               </button>
-                            </h5>
-                         </div>
-                         <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-                            <div class="card-body accordion-content">
-                                <!-- content for Manage Orders -->
-                                <ul>
-                                    <li><a href="?orders">View All Orders</a></li>
-                                    <li><a href="?confirm_pending_orders">Confirm Pending Orders</a></li>
-                                    <li><a href="?delivered">Delivered Orders</a></li>
-                                    <li><a href="?cancelled">Cancelled Orders</a></li>
-                                </ul>
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <button class="btn btn" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="this.classList.toggle('active')">
+                                        Manage Orders
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                                <div class="card-body accordion-content">
+                                    <!-- Manage Orders -->
+                                    <ul style="list-style: none;">
+                                        <li><a href="?vieworders">View All Orders</a></li>
+                                        <li><a href="?confirm_pending_orders">Confirm Pending Orders</a></li>
+                                        <li><a href="?delivered">Delivered Orders</a></li>
+                                        <li><a href="?cancelled">Cancelled Orders</a></li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card bg-transparent">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <button class="btn btn collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Manage Items
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="bg-transparent collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                <div class="card-body accordion-content">
+                                    <!-- Manage Items -->
+                                    <ul style="list-style: none;">
+                                        <li><a href="?viewitem">View Items</a></li>
+                                        <li><a href="?additem">Add Items</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card bg-transparent">
+                            <div class="card-header" id="headingThree">
+                                <h5 class="mb-0">
+                                    <button class="btn btn collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                        Show Reports
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                                <div class="card-body accordion-content">
+                                    <!-- Show Reports -->
+                                    <ul style="list-style: none;">
+                                        <li><a href="?sales">Sales Report</a></li>
+                                        <li><a href="?inven">Inventory Report</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card bg-transparent">
+                            <div class="card-header" id="headingFour">
+                                <h5 class="mb-0">
+                                    <button class="btn btn collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                        Show Users
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                                <div class="card-body accordion-content">
+                                    <!-- Show Users -->
+                                    <ul style="list-style: none;">
+                                        <li><a href="#">View Users</a></li>
+                                    </ul>
+                                </div>
+
                             </div>
                         </div>
                     </div>
+                 </div>
+        </div>
+    </div>
 
-                    <div class="card ">
-                       <div class="card-header bg-transparent" id="headingTwo">
-                          <h5 class="mb-0">
-                             <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                 Manage Items
-                             </button>
-                          </h5>
-                       </div>
-                          <div id="collapseTwo" class="bg-transparent collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-                             <div class="card-body accordion-content">
-                                <!-- content for Manage Items -->
-                                <ul>
-                                    <li><a href="?viewitem">View Items</a></li>
-                                    <li><a href="?additem">Add Items</a></li>
-                                </ul>
-                             </div>
-                          </div>
-                    </div>
 
-                    <div class="card bg-transparent">
-                       <div class="card-header" id="headingThree">
-                          <h5 class="mb-0">
-                             <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Show Reports
-                             </button>
-                          </h5>
-                       </div>
-                       <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-                          <div class="card-body accordion-content">
-                             <!-- content for Show Reports -->
-                                <ul>
-                                    <li><a href="?sales">Sales Report</a></li>
-                                    <li><a href="?inven">Inventory Report</a></li>
-                                    <li><a href="?useract">User Activity Report</a></li>
-                                </ul>
-                          </div>
-                       </div>
-                    </div>
 
-                    <div class="card bg-transparent">
-                       <div class="card-header" id="headingFour">
-                          <h5 class="mb-0">
-                             <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                Show Users
-                             </button>
-                          </h5>
-                       </div>
-                       <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
-                          <div class="card-body accordion-content">
-                             <!-- content for Show Users -->
-                             <ul>
-                                 <li><a href="#">View Users</a></li>
-                                 <li><a href="#">New Admin Users</a></li>
-                             </ul>
-                          </div>
-                       </div>
-                    </div>
-                </div>
-             </div>
-            <!--                contents-->
-                <?php
-                if(isset($_POST['search'])){
-                    $k = htmlentities($_POST['search']);
-                    $order_sql = "select o.order_ref_number order_ref_number
-                                           , u.fullname         fullname
-                                           , u.shipping_address shipping_address
-                                           , u.contact contact
-                                           , cast(o.date_ordered as date) date_ordered
-                                           , count(*) order_count
-                                        from orders o
-                                    inner join users u
-                                            on (o.user_id = u.user_id)
-                                       where ( o.order_ref_number = '$k'
-                                                OR 
-                                                u.fullname LIKE '%$k%'
-                                                )
-                                         AND o.order_status = ?
-                                       group by o.order_ref_number
-                                           , u.fullname
-                                           , u.shipping_address
-                                           , u.contact
-                                           , cast(o.date_ordered as date)
-                                       order by o.date_ordered DESC ";
-                }
-                else{
-                       $order_sql = "select o.order_ref_number order_ref_number
-                                           , u.fullname         fullname
-                                           , u.shipping_address shipping_address
-                                           , u.contact contact
-                                           , cast(o.date_ordered as date) date_ordered
-                                           , count(*) order_count
-                                        from orders o
-                                    inner join users u
-                                            on (o.user_id = u.user_id)
-                                       where o.order_status = ?
-                                       group by o.order_ref_number
-                                           , u.fullname
-                                           , u.shipping_address
-                                           , u.contact
-                                           , cast(o.date_ordered as date)
-                                       order by o.date_ordered DESC
-                                       LIMIT 50;";
-                                      
-                       
-                   }
-                 $sql_itemize = "select p.item_id
-                                  , p.item_name
-                                  , p.item_file
-                                  , o.order_id
-                                  , COALESCE(pr.item_price,0) as item_price
-                                  , o.item_qty as item_qty
-                                  , curr_stock_qty
-                               from orders o
-                            inner join products p
-                              on (o.item_id = p.item_id)
-                            LEFT JOIN (
-                                SELECT item_id, MAX(price_id) AS price_id
-                                FROM pricing
-                                WHERE (CURRENT_DATE between eff_start_dt and eff_end_dt)
-                                or (eff_start_dt is null)
-                                GROUP BY item_id
-                            ) AS prmax 
-                              ON i.item_id = prmax.item_id
-                            JOIN price pr 
-                              ON prmax.item_id = pr.item_id
-                             AND prmax.price_id = pr.price_id
-                            LEFT JOIN (
-                                    SELECT item_id, SUM(stock_qty) AS curr_stock_qty
-                                    FROM stock
-                                    GROUP BY item_id
-                                ) AS sk 
-                              ON i.item_id = sk.item_id
-                           where order_status = ?
-                           and o.order_ref_number = ?";
-                
-                  
-                ?>
-                    <form action="" method="POST">
-                        <div class="input-group mb-3 w-50">
-                            <input type="search" required name="search" value="<?php if(isset($_POST['search'])){ echo $_POST['search']; }else{ echo ""; }?>" placeholder="ORDER REFERENCE NUMBER or Full Name" class="form-control">
-                            <input type="hidden" name="orders" class="form-control">
-                            <button class="btn btn-primary">Search</button>
-                        </div>
-                        
-                    </form>
-                
+            <!-- contents-->
+          
                 <?php 
                   
                 if(isset($_GET['msg'])){ ?>
@@ -239,7 +222,7 @@ if(isset($_GET['signout'])){
                 }
                 /*orders*/
                 if(isset($_GET['orders'])){ 
-                    include_once "orders.php";
+                    include_once "view_orders.php";
                 }
                 if(isset($_GET['confirm_pending_orders'])){  ?>
                         <div class="container-fluid">
@@ -251,19 +234,7 @@ if(isset($_GET['signout'])){
                                 </div>
                             </div>
                         </div>
-            <?php    
-                }
-                
-                if(isset($_GET['ship_order'])){ ?>
-                     <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                  
-                                      <h3 class="display-6">Ship Orders</h3> 
-                                    <?php admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'C' , 'E'); ?>
-                                </div>
-                            </div>
-                        </div>
+            
                 <?php }
                 
                 
@@ -326,9 +297,7 @@ if(isset($_GET['signout'])){
                     include_once "update_item.php";
                 }
                 ?>
-            </div>
-        </div>
-    </div>
+         
 <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

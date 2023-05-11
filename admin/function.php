@@ -35,15 +35,14 @@ function count_cart_items($conn, $user) {
 }
 
 function get_items_from_order($conn, $order_id){
-    return query($conn, "SELECT i.item_name, i.item_id, i.item_qty, pr.item_price
+    return query($conn, "SELECT i.item_name, i.item_id, pr.item_price
                            FROM orders o
                         inner join item i
                               on o.item_id = i.item_id
                      LEFT JOIN (
                         SELECT item_id, MAX(price_id) AS price_id
                         FROM price
-                        WHERE (CURRENT_DATE between eff_start_dt and eff_end_dt)
-                        or (eff_start_dt is null)
+                    
                         GROUP BY item_id
                     ) AS prmax 
                       ON i.item_id = prmax.item_id
@@ -60,23 +59,23 @@ function admin_retrieve_orders($conn, $sql_1,$sql_2, $status ='P', $mode = 'V'){
            return count(query($conn,$sql_1,array($status)));
        }
     else if($mode == 'V'){
-     echo "<table class='table table-responsive table-striped table-borderless'>";               
-      $f_orders=query($conn, $sql_1, array($status));
-        if(count($f_orders) > 0){
-            foreach($f_orders as $ord){ ?>
-              <tr class='border border-1' data-bs-toggle="collapse" href="#<?php echo $ord['order_ref_number']; ?>" role="button" aria-expanded="false" aria-controls="<?php echo $ord['order_ref_number'];?>">
-              <?php 
-                                       echo "<td><b>" . $ord['order_ref_number'] . "<b></td>" ;
-                                       echo "<td>" . $ord['date_ordered'] . "</td>" ;
-                                       echo "<td>" . $ord['order_count'] . "</td>" ; 
-                                       $total_amt=0;
-                                      $order_ref_number =  $ord['order_ref_number'];
-                                      $show_order_item = query($conn, $sql_2, array($status, $order_ref_number));
-                                       foreach($show_order_item as $idet){
-                                            $total_amt += $idet['item_price'] * $idet['item_qty'];
-                                       }
-                                       echo "<td>" . CURRENCY . number_format($total_amt,2) . "</td>" ;  ?>
-                                       <td><?php echo strtoupper($ord['fullname']) . ", " . ucwords($ord['shipping_address']) . ", (". $ord['contact'] .")"; ?></td>
+        echo "<table class='table table-responsive table-striped table-borderless'>";               
+            $f_orders=query($conn, $sql_1, array($status));
+                if(count($f_orders) > 0){
+                   foreach($f_orders as $ord){ ?>
+                       <tr class='border border-1' data-bs-toggle="collapse" href="#<?php echo $ord['order_ref_number']; ?>" role="button" aria-expanded="false" aria-controls="<?php echo $ord['order_ref_number'];?>">
+                          <?php 
+                             echo "<td><b>" . $ord['order_ref_number'] . "<b></td>" ;
+                             echo "<td>" . $ord['date_ordered'] . "</td>" ;
+                             echo "<td>" . $ord['order_count'] . "</td>" ; 
+                                $total_amt=0;
+                                $order_ref_number =  $ord['order_ref_number'];
+                                $show_order_item = query($conn, $sql_2, array($status, $order_ref_number));
+                                   foreach($show_order_item as $idet){
+                                          $total_amt += $idet['item_price'] * $idet['item_qty'];
+                                   }
+                                   echo "<td>" . CURRENCY . number_format($total_amt,2) . "</td>" ;  ?>
+                                   <td><?php echo strtoupper($ord['fullname']) . ", " . ucwords($ord['shipping_address']) . ", (". $ord['contact'] .")"; ?></td>
               </tr>
               <?php 
             

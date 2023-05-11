@@ -78,7 +78,7 @@
 <div class="tab-content">
   <div class="tab-pane active" id="pendingOrders" role="tabpanel" aria-labelledby="pendingOrders-tab" tabindex="0">
      <?php
-       admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'P' , 'V');
+       admin_retrieve_orders($conn, $sql_1, $sql_2, 'P', 'V');
       ?>
       
   </div>
