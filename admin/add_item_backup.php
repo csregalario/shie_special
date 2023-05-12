@@ -34,27 +34,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="item_cat">Item Category</label>
-                        <select name="item_cat" id="item_cat" class="form-control">
-                            <?php
-                $category = query($conn,"SELECT * FROM `category`");
-                foreach($category as $cat ){ ?>
-                            <option value="<?php echo $cat['cat_id'];?>"><?php echo $cat['cat_desc'];?></option>
-                            <?php }
-                ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
                         <label for="item_price">Item Price</label>
                         <input type="number" class="form-control" id="item_price" name="item_price" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="stock_qty">Stock Quantity</label>
-                        <input type="number" class="form-control" id="stock_qty" name="stock_qty" required>
-                    </div>
-
                     <button type="submit" name="submit" value="Done" class="btn btn-primary">Submit</button>
 
                 </form>

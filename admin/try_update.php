@@ -47,99 +47,40 @@ if(isset($_FILES['item_image']) && $_FILES['item_image']['error'] != UPLOAD_ERR_
                 $upload_msg .= "The file ". htmlspecialchars( $item_filename). " has been uploaded.";
                 
                 //initiate update parameters
-                $table = "products";
+                $table = "item";
                 $fields =array("item_desc" => $item_desc,
-                               "item_cat" => $item_cat,
                                "item_file" => $newbasename
                               );
                 $filter =array("item_id" => $item_id);
                 
                 update($conn, $table, $fields, $filter);
                 
-                //pricing
+                //price
                 
                     $sql_check_overlap = "SELECT price_id 
-                                        from pricing 
+                                        from price 
                                        WHERE item_id = $item_id 
-                                         and ('$start_eff_dt' between eff_start_dt and eff_end_dt
-                                          or  '$end_eff_dt' between eff_start_dt and eff_end_dt)";
+                                         and ('$start_date' between start_date and end_date
+                                          or  '$end_date' between start_date and end_date)";
                      $price_overlap = query($conn,$sql_check_overlap);
                      
                      if(count($price_overlap) > 0){
-                         $update_pricing = "UPDATE pricing
+                         $update_price = "UPDATE price
                                                SET item_price = ?
-                                                 , eff_start_dt = ?
-                                                 , eff_end_dt = ?
+                                                 , start_date= ?
+                                                 , end_date= ?
                                              WHERE item_id = ? 
-                                               and ('$start_eff_dt' between eff_start_dt and eff_end_dt
-                                               or  '$end_eff_dt' between eff_start_dt and eff_end_dt)";
-                         query($conn, $update_pricing, array($item_price,$start_eff_dt,$end_eff_dt, $item_id));
+                                               and ('$start_date' between start_date and end_date
+                                          or  '$end_date' between start_date and end_date)";
+                         query($conn, $update_price, array($item_price,$start_date,$end_date, $item_id));
                      }
                     else{
-                         $table = "pricing";
+                         $table = "price";
                          $fields = array("item_id" => $item_id
                                         ,"item_price"=>$item_price
-                                        ,"eff_start_dt"=>$start_eff_dt
-                                        ,"eff_end_dt"=>$end_eff_dt);
+                                        ,"start_date"=>$start_date
+                                        ,"end_date"=>$end_eff_dt);
                          insert($conn, $table, $fields);
                      }
-                //stock
-                if($stock_qty > 0 || $stock_qty < 0){
-                    
-                    $table = "stock";
-                    $fields = array("item_id"=> $item_id ,
-                                   "stock_qty" => $stock_qty);
-                    insert($conn, $table, $fields);
-                }
-            
+               
         }
-         else{
-                 $upload_msg .= "The file ". htmlspecialchars( $item_filename). " was not uploaded.";
-            }   
-    }
-}
-else {
-                $table = "products";
-                $fields =array("item_desc" => $item_desc,
-                               "item_cat" => $item_cat
-                              );
-                $filter =array("item_id" => $item_id);
-                
-                update($conn, $table, $fields, $filter);
-                    $sql_check_overlap = "SELECT price_id 
-                                        from pricing 
-                                       where item_id = $item_id 
-                                         and ('$start_eff_dt' between eff_start_dt and eff_end_dt
-                                          or '$end_eff_dt' between eff_start_dt and eff_end_dt)";
-                     $price_overlap = query($conn,$sql_check_overlap);
-                     
-                     if(count($price_overlap) > 0){
-                         $update_pricing = "UPDATE pricing 
-                                               SET item_price = ?
-                                                 , eff_start_dt = ?
-                                                 , eff_end_dt = ?
-                                             WHERE item_id = ? 
-                                               and ('$start_eff_dt' between eff_start_dt and eff_end_dt 
-                                               or '$end_eff_dt' between eff_start_dt and eff_end_dt)";
-                         query($conn, $update_pricing, array($item_price,$start_eff_dt,$end_eff_dt, $item_id));
-                     }
-                    else{
-                         $table = "pricing";
-                         $fields = array("item_id" => $item_id
-                                        ,"item_price"=>$item_price
-                                        ,"eff_start_dt"=>$start_eff_dt
-                                        ,"eff_end_dt"=>$end_eff_dt );
-                         insert($conn, $table, $fields);
-                     }
-                
-                
-                if($stock_qty > 0 || $stock_qty < 0){
-                    
-                    $table = "stock";
-                    fields = array("item_id"=> $item_id ,
-                                   "stock_qty" => $stock_qty);
-                    insert($conn, $table, $fields);
-                }
-}
-
-exit();

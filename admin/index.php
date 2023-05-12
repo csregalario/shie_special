@@ -1,4 +1,4 @@
-﻿<?php 
+﻿﻿<?php 
 session_start();
 include_once "connection.php"; 
 
@@ -134,8 +134,7 @@ body{
                                     <ul style="list-style: none;">
                                         <li><a href="?vieworders">View All Orders</a></li>
                                         <li><a href="?confirm_pending_orders">Confirm Pending Orders</a></li>
-                                        <li><a href="?delivered">Delivered Orders</a></li>
-                                        <li><a href="?cancelled">Cancelled Orders</a></li>
+                                        <li><a href="?received">Received Orders</a></li>
                                     </ul>
 
                                 </div>
@@ -174,7 +173,6 @@ body{
                                     <!-- Show Reports -->
                                     <ul style="list-style: none;">
                                         <li><a href="?sales">Sales Report</a></li>
-                                        <li><a href="?inven">Inventory Report</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -206,97 +204,162 @@ body{
 
 
             <!-- contents-->
-          
+            <?php
+                if (isset($_POST['search'])) {
+                    $k = htmlentities($_POST['search']);
+                    $reservation_sql = "SELECT r.order_ref_number AS order_ref_number,
+                                                 u.fname AS fname,
+                                                 u.lname AS lname,
+                                                 u.address AS address,
+                                                 u.contact_num AS contact_num,
+                                                 CAST(r.date_ordered AS date) AS date_ordered,
+                                                 COUNT(*) AS order_count
+                                          FROM reservation r
+                                          INNER JOIN user u ON r.user_id = u.user_id
+                                          WHERE (r.order_ref_number = '$k' OR CONCAT(u.fname, ' ', u.lname) LIKE '%$k%')
+                                              AND r.order_status = 'some_value'
+                                              GROUP BY r.order_ref_number,
+                                                       u.fname,
+                                                       u.lname,
+                                                       u.address,
+                                                       u.contact_num,
+                                                       CAST(r.date_ordered AS date)";
+                    } else {
+                        $reservation_sql = "SELECT r.order_ref_number AS order_ref_number,
+                                                    u.fname AS fname,
+                                                    u.lname AS lname,
+                                                    u.address AS address,
+                                                    u.contact_num AS contact_num,
+                                                    CAST(r.date_ordered AS date) AS date_ordered,
+                                                    COUNT(*) AS order_count
+                                             FROM reservation r
+                                             INNER JOIN user u ON r.user_id = u.user_id
+                                             WHERE r.order_status = 'D' -- set value for order_status
+                                             GROUP BY r.order_ref_number,
+                                                      u.fname,
+                                                      u.lname,
+                                                      u.address,
+                                                      u.contact_num,
+                                                      CAST(r.date_ordered AS date)
+                                             ORDER BY r.date_ordered DESC
+                                             LIMIT 50";
+                    }
+
+                    $sql_itemize = "SELECT i.item_id,
+                                           i.item_name,
+                                           i.item_file,
+                                           r.reservation_id,
+                                           pr.item_price,
+                                           r.item_quantity
+                                    FROM reservation r
+                                    INNER JOIN item i ON r.item_id = i.item_id
+                                    INNER JOIN price pr ON r.price_id = pr.price_id
+                                    WHERE r.order_status = 'some_status'
+                                      AND r.order_ref_number = 'some_reference_number'
+                                    LIMIT 0, 25";
+
+                    ?>
+
+                    <form action="" method="POST">
+                        <div class="col-7 text-center bg-transparent mx-auto my-3 border border-dark">
+                            <div class="input-group mb-3 w-50">
+                                <input type="search" required name="search"
+                                       value="<?php if (isset($_POST['search'])) {
+                                           echo $_POST['search'];
+                                       } else {
+                                           echo "";
+                                       } ?>" placeholder="ORDER REFERENCE NUMBER or Full Name"
+                                       class="form-control">
+                                <input type="hidden" name="orders" class="form-control">
+                                <button class="btn btn-outline-primary">Search</button>
+                            </div>
+
+                        </div>
+                    </form>
+
+
+                    <?php 
+if (isset($_GET['msg'])) {
+    ?>
+    <div class="alert alert-success"><?php echo $_GET['msg']; ?></div>
+<?php }
+/* Reports */
+if(isset($_GET['sales'])){
+    include_once "sales_report.php";
+}
+/* Orders */
+if(isset($_GET['orders'])){ 
+    include_once "view_orders.php";
+}
+if(isset($_GET['confirm_pending_orders'])){  
+    ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-7 mx-auto my-3 text-light">
+                <h3 class="display-6">Confirm Pending Orders</h3> 
                 <?php 
-                  
-                if(isset($_GET['msg'])){ ?>
-                     <div class="alert alert-success"><?php echo $_GET['msg']; ?></div>
-                <?php }
-                /*Reports*/
-                if(isset($_GET['sales'])){
-                    
-                    include_once "sales_report.php";
-                }
-                if(isset($_GET['inven'])){
-                    include_once "inventory_report.php";
-                }
-                /*orders*/
-                if(isset($_GET['orders'])){ 
-                    include_once "view_orders.php";
-                }
-                if(isset($_GET['confirm_pending_orders'])){  ?>
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-12">
-                                  
-                                      <h3 class="display-6">Confirm Pending Orders</h3> 
-                                    <?php admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'P' , 'E'); ?>
-                                </div>
-                            </div>
-                        </div>
-            
-                <?php }
-                
-                
-                if(isset($_GET['delivered'])){ ?>
-                     <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                  
-                                      <h3 class="display-6">Delivered by Couriers</h3> 
-                                    <?php admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'D' , 'E'); ?>
-                                </div>
-                            </div>
-                        </div>
-                <?php }
-                
-                if(isset($_GET['cancelled'])){ ?>
-                     <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                  
-                                      <h3 class="display-6">Cancelled</h3> 
-                                    <?php admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'N' , 'E'); ?>
-                                </div>
-                            </div>
-                        </div>
-                <?php }
-                /*items*/
-                if(isset($_GET['additem'])){
-                    include_once "add_item.php";
-                }
-                if(isset($_GET['viewitem'])){
-                    if(isset($_GET['deacitem'])){
-                    
-                    $item=htmlentities($_GET['deacitem']);
-                    $fields = array("item_status" => 'D');
-                    $filter = array("item_id" => $item);
-                        if(update($conn, "products", $fields, $filter)){ ?>
-                          <div class="alert alert-danger mb-0">Item Deactivated</div>
-                        <?php } 
-                    }
-                    if(isset($_GET['reacitem'])){
-                    
-                    $item=htmlentities($_GET['reacitem']);
-                    $fields = array("item_status" => 'A');
-                    $filter = array("item_id" => $item);
-                        if(update($conn, "products", $fields, $filter)){ ?>
-                          <div class="alert alert-success mb-0">Item Reactivated</div>
-                        <?php } 
-                    }
-                    if($_GET['viewitem'] == '2'){
-                    include_once "view_item_tiled.php";
-                    }
-                    else{
-                    include_once "view_item.php";
-                    }
-                }
-                
-                if(isset($_GET['updateitem'])){
-                    $item_id=htmlentities($_GET['updateitem']);
-                    include_once "update_item.php";
-                }
+                admin_retrieve_orders($conn, $reservation_sql, $sql_itemize, 'P', 'E'); 
                 ?>
+            </div>
+        </div>
+    </div>
+    <?php 
+}
+
+if(isset($_GET['received'])){ 
+    ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-7 mx-auto my-3 text-light">
+                <h3 class="display-6">Received</h3> 
+                <?php 
+                admin_retrieve_orders($conn, $reservation_sql, $sql_itemize, 'D', 'E'); 
+                ?>
+            </div>
+        </div>
+    </div>
+    <?php 
+}
+
+/* Items */
+if(isset($_GET['additem'])){
+    include_once "add_item.php";
+}
+if(isset($_GET['viewitem'])){
+    if(isset($_GET['deacitem'])){ 
+        $item = htmlentities($_GET['deacitem']);
+        $fields = array("item_status" => 'D');
+        $filter = array("item_id" => $item);
+        if(update($conn, "item", $fields, $filter)){ 
+            ?>
+            <div class="alert alert-danger mb-0">Item Deactivated</div>
+            <?php 
+        } 
+    }
+    if(isset($_GET['reacitem'])){ 
+        $item = htmlentities($_GET['reacitem']);
+        $fields = array("item_status" => 'A');
+        $filter = array("item_id" => $item);
+        if(update($conn, "item", $fields, $filter)){ 
+            ?>
+            <div class="alert alert-success mb-0">Item Reactivated</div>
+            <?php 
+        } 
+    }
+    if($_GET['viewitem'] == '2'){
+        include_once "view_item_tiled.php";
+    }
+    else{
+        include_once "view_item.php";
+    }
+}
+
+if(isset($_GET['updateitem'])){
+    $item_id = htmlentities($_GET['updateitem']);
+    include_once "update_item.php";
+}
+?>
+
          
 <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -308,25 +371,4 @@ body{
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/bootstrap.bundle.min.js"></script>
 </body>
-</html>
-
-<script>
-   $(document).ready(function() {
-    $('#minus_qty').click(function() {
-        var currentVal = parseInt($('#stock_qty').val());
-     //   if (!isNaN(currentVal) && currentVal > 1) {
-            $('#stock_qty').val(currentVal - 1);
-       // }
-    });
-
-    $('#plus_qty').click(function() {
-        var currentVal = parseInt($('#stock_qty').val());
-        //if (!isNaN(currentVal) && currentVal < 1000) {
-            $('#stock_qty').val(currentVal + 1);
-    //    }
-    });
-});
-</script>
-</body>
-
 </html>

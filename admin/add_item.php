@@ -37,9 +37,8 @@
                     <div class="alert alert-secondary"><?php echo htmlentities($_GET['status']);?></div>
                 <?php }?>
             </div>
-
-            <form action="insert.php" method="post" enctype="multipart/form-data" style="padding: 20px; margin-top: 20px; margin-bottom: 20px;">
-
+             <form action="insert.php" method="post">
+           
                 <div class="form-group">
                     <label for="item_name">Item Name</label>
                     <input type="text" class="form-control" id="item_name" name="item_name" required>
@@ -57,8 +56,8 @@
 
 
                 <div class="form-group">
-                    <label for="item_image">Item Image</label>
-                    <input type="file" id="item_image" name="item_image" required>
+                    <label for="item_file">Item File</label>
+                    <input type="file" id="item_file" name="item_file" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Submit</button>

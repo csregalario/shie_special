@@ -1,17 +1,13 @@
 <?php
-include_once "../db.php";
+include_once "connection.php";
 if(isset($_POST['item_id'])){
 // Get the form data
-$item_id = mysqli_real_escape_string($conn, $_POST['item_id']);
 $item_name = mysqli_real_escape_string($conn, $_POST['item_name']);
-$item_cat = mysqli_real_escape_string($conn, $_POST['item_cat']);
-$item_desc = mysqli_real_escape_string($conn, $_POST['item_desc']);
-$item_price = mysqli_real_escape_string($conn, $_POST['item_price']);
+    $item_desc = mysqli_real_escape_string($conn, $_POST['item_desc']);
+    $item_price = mysqli_real_escape_string($conn, $_POST['item_price']);
     
-    $start_eff_dt = $_POST['start_eff_dt'];
-    $end_eff_dt = $_POST['end_eff_dt'];
-$stock_qty = (int)$_POST['stock_qty'];
-//$cur_stock_qty = htmlentities($_POST['cur_stock_qty']);
+    $start_date = $_POST['start_date'];
+    $end_date = $_POST['end_date'];
 
 $isPriceAdjusted = false;
  
@@ -29,16 +25,16 @@ $mode=0;
     
 
        
-if($start_eff_dt == "" || $end_eff_dt == ""){
+if($start_date == "" || $end_date == ""){
     $isPriceAdjusted = false;
 }
 else{
     $isPriceAdjusted = true;    
 }
 //check if there is file to upload
-if(isset($_FILES['item_image']) && $_FILES['item_image']['error'] != UPLOAD_ERR_NO_FILE ){
+if(isset($_FILES['item_file']) && $_FILES['item_file']['error'] != UPLOAD_ERR_NO_FILE ){
     $mode=1;  
-    $item_filename = basename($_FILES["item_image"]["name"]);
+    $item_filename = basename($_FILES["item_file"]["name"]);
     $target_file = $target_dir . $item_filename;
     $new_file_ind = 1;
     $uploadOk = 1;
@@ -47,7 +43,7 @@ if(isset($_FILES['item_image']) && $_FILES['item_image']['error'] != UPLOAD_ERR_
     
     // Check if image file is a actual image or fake image
 
-    $check = getimagesize($_FILES["item_image"]["tmp_name"]);
+    $check = getimagesize($_FILES["item_file"]["tmp_name"]);"
     if($check !== false) {
         //$upload_msg .= "File is an image - " . $check["mime"] . ".";
         $uploadOk = 1;
@@ -57,7 +53,7 @@ if(isset($_FILES['item_image']) && $_FILES['item_image']['error'] != UPLOAD_ERR_
     }
     
         // Check file size
-    if ($_FILES["item_image"]["size"] > 5000000) {
+    if ($_FILES["item_file"]["size"] > 5000000) {
         $upload_msg .= "Sorry, your file is too large.<br>";
         $uploadOk = 0;
     }
@@ -79,134 +75,52 @@ if(isset($_FILES['item_image']) && $_FILES['item_image']['error'] != UPLOAD_ERR_
          
         
         //check if upload is done.
-            if (move_uploaded_file($_FILES["item_image"]["tmp_name"], $newfilename)) {
+            if (move_uploaded_file($_FILES["item_file"]["tmp_name"], $newfilename)) {
                 $upload_msg .= "The Item Image has been updated.<br>";
                 
                 //initiate update parameters
-                $table = "products";
+                $table = "item";
                 $fields =array("item_desc" => $item_desc,
-                               "cat_id" => $item_cat,
                                "item_file" => $newbasename
                               );
                 $filter =array("item_id" => $item_id);
                 
                 update($conn, $table, $fields, $filter);
                 
-                //pricing
+                //price
                 //initiate sql that checks for overlapping price effectivity.
                 if($isPriceAdjusted){
                     $sql_check_overlap = "SELECT price_id 
-                                        from pricing 
+                                        from price
                                        WHERE item_id = $item_id 
-                                         and (? between eff_start_dt and eff_end_dt
-                                          or  ? between eff_start_dt and eff_end_dt)";
-                     $price_overlap = query($conn,$sql_check_overlap, array($start_eff_dt, $end_eff_dt));
+                                         and (? between start_date and end_date
+                                          or  ? between start_date and end_date)";
+                     $price_overlap = query($conn,$sql_check_overlap, array($start_date, $end_date));
                 //if there is a record.     
                      if(count($price_overlap) > 0){
-                         $update_pricing = "UPDATE pricing
+                         $update_price = "UPDATE price
                                                SET item_price = ?
-                                                 , eff_start_dt = ?
-                                                 , eff_end_dt = ?
+                                                 , start_date = ?
+                                                 , end_date = ?
                                                  , last_update_ts = CURRENT_TIMESTAMP
                                              WHERE item_id = ? 
-                                               AND (? between eff_start_dt and eff_end_dt
-                                                OR  ? between eff_start_dt and eff_end_dt)";
-                         query($conn, $update_pricing, array($item_price,$start_eff_dt,$end_eff_dt, $item_id, $start_eff_dt, $end_eff_dt));
+                                                and (? between start_date and end_date
+                                          or  ? between start_date and end_date)";
+                         query($conn, $update_price, array($item_price,$start_date,$end_date, $item_id, $start_date, $end_date));
                      }
                 //if there is none.
                     else{
-                         $table = "pricing";
+                         $table = "price";
                          $fields = array("item_id" => $item_id
                                         ,"item_price"=>$item_price
-                                        ,"eff_start_dt"=>$start_eff_dt
-                                        ,"eff_end_dt"=>$end_eff_dt);
+                                        ,"start_date"=>$start_date
+                                        ,"end_date"=>$end_date);
                          insert($conn, $table, $fields);
                      }
-                $err_msg .= "Pricing Adjusted for {$item_name} effective {$start_eff_dt} to {$end_eff_dt}.";
+                $err_msg .= "Pricing Adjusted for {$item_name} effective {$start_dated} to {eff_date}.";
                 }
                   
-              /*Stock Qty*/
-               if($stock_qty != 0){
-                   if($stock_qty < 0){
-                       $reason = "Admin made a stock reversal.";
-                   }
-                   else{
-                       $reason = "Admin added a stock.";
-                   }
-                   $table = "stock";
-                   $fields = array("item_id"=> $item_id ,
-                                  "stock_qty" => $stock_qty ,
-                                  "stock_reason" => $reason
-                                 );
-                   insert($conn, $table, $fields);
-               }
-            
-         }
-         else{
-                 $upload_msg .= "The file ". htmlspecialchars( $item_filename). " was not uploaded. <br>";
-            }   
-    }
-}
-else {
-$mode = 2;
-    
-                $table = "products";
-                $fields =array("item_desc" => $item_desc,
-                               "cat_id" => $item_cat
-                              );
-                $filter =array("item_id" => $item_id);
-                
-                update($conn, $table, $fields, $filter);
-    
-                if($isPriceAdjusted){
-                    $sql_check_overlap = "SELECT price_id 
-                                        from pricing 
-                                       where item_id = $item_id 
-                                         and (? between eff_start_dt and eff_end_dt
-                                          or ? between eff_start_dt and eff_end_dt)
-                                          LIMIT 1";
-                    
-                     $price_overlap = query($conn,$sql_check_overlap, array($start_eff_dt, $end_eff_dt));
-                     if(count($price_overlap) > 0){
-                         
-                         $update_pricing = "UPDATE pricing 
-                                               SET item_price = ?
-                                                 , eff_start_dt = ?
-                                                 , eff_end_dt = ?
-                                                 , last_update_ts = CURRENT_TIMESTAMP
-                                             WHERE item_id = ? 
-                                               and (? between eff_start_dt and eff_end_dt 
-                                               or ? between eff_start_dt and eff_end_dt) ";
-                         query($conn, $update_pricing, array($item_price,$start_eff_dt,$end_eff_dt, $item_id, $start_eff_dt, $end_eff_dt));
-                     }
-                    else{
-                         $table = "pricing";
-                         $fields = array("item_id" => $item_id
-                                        ,"item_price"=>$item_price
-                                        ,"eff_start_dt"=>$start_eff_dt
-                                        ,"eff_end_dt"=>$end_eff_dt);
-                         insert($conn, $table, $fields);
-                     }
-                $err_msg .= "Pricing Adjusted for {$item_name} effective {$start_eff_dt} to {$end_eff_dt}. <br>";
-                }
-                    
-                /*Stock Qty*/
-               if($stock_qty != 0){
-                   if($stock_qty < 0){
-                       $reason = "Admin made a stock reversal.";
-                   }
-                   else{
-                       $reason = "Admin added a stock.";
-                   }
-                   $table = "stock";
-                   $fields = array("item_id" => $item_id
-                                 , "stock_qty" => $stock_qty
-                                 , "stock_reason" => $reason
-                                );
-                   insert($conn, $table, $fields);
-                   $err_msg .= $reason;
-               }
-}
+             
 if( $err_msg != "" || $upload_msg != ""){
      $err_msg = $err_msg . "</br>" . $upload_msg;
 }else{
