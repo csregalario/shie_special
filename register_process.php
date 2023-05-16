@@ -1,5 +1,5 @@
 <?php
-	include'connection.php';
+	include_once "connection.php";
 	
 $fname = $_POST ['fname'];
 $lname = $_POST ['lname'];
@@ -24,4 +24,4 @@ if ($conn->connect_error){
 	
 }
  ?>
- <meta http-equiv="refresh" content="0; login.php">
+ <meta http-equiv="refresh" content="0; home2.php">v

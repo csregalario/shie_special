@@ -201,15 +201,15 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-center postion-relative">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-center position-relative">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
+          <!--<li class="nav-item">
+            <a class="nav-link " href="#">Menu</a>
+          </li> -->
           <li class="nav-item">
-            <a class="nav-link " href="menu1.php">Menu</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About Us</a>
+            <a class="nav-link" href="about1.php">About Us</a>
           </li>
         </ul>
         <ul class="nav navbar-nav navbar-right text-center">
@@ -220,7 +220,7 @@
 
 <!-- Modal Login button -->
 <button type="button" class="btn" id="login" data-bs-toggle="modal" data-bs-target="#ModalForm">Login</button>
-<form action="login_process1.php" method="post">
+<form action="login_process2.php" method="post">
 <div class="modal fade" id="ModalForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-light bg-opacity-75">
@@ -229,20 +229,22 @@
           <div class="myform">
                   <div class="mb-3 mt-4">
                       <label for="InputEmail1" class="form-label" ></label>
-                      <input type="email" class="form-control" id="InputEmail1" name="email_add" placeholder="Email or phone number" aria-describedby="emailHelp" required>
+                      <input type="text" class="form-control" id="InputEmail1" name="email" placeholder="Email address" aria-describedby="emailHelp" required>
                   </div>
-                  <div class="mb-3" >
+                  <div class="mb-3">
                       <label for="InputPassword1" class="form-label"></label>
-                      <input type="password" class="form-control" id="InputPassword1" name="password" placeholder="Password" required>
+                      <input type="password" class="form-control" id="InputPassword1" name="pass" placeholder="Password" required>
                       <input type="checkbox" onclick="myFunction()" class="mt-2"> Show Password
                   </div>
-                  <button type="submit" class="btn mt-3">Log In</button>
+                  <div class="d-flex justify-content-center">
+                  <button type="submit" class="btn mt-3">Log In</button></div>
                   <p class="signUp">Need an account? <a class="sU" href="register.php">Sign up now</a></p>
           </div>
       </div>
     </div>
   </div>
 </div>
+</form>
 </form>
   </div>
     </div>
@@ -254,9 +256,9 @@
            </div>
            <div class="col-lg-5 col-xs-12 mb-2 mt-0 text-center">
             <img src="brand.png" alt="">
-            <button class="btn btn-warning mt-4" type= "button" style="font-size: 20px; color: white;" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">ORDER NOW</button>
+            <button id="myButton" class="btn btn-warning mt-4" type= "button" style="font-size: 20px; color: white;" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">ORDER NOW</button>
             <div class="collapse" id="collapseExample">
-                <div class="card card-body" style="border-radius: 5px; width: 30rem;">Oops! It looks like you're not logged in yet. Please log in or create an account to proceed with your order.
+                <div id="alert" class="card card-body" style="border-radius: 5px; width: 30rem;">Oops! It looks like you're not logged in yet. Please log in or create an account to proceed with your order.
                   </div>
               </div>
           </div>
@@ -265,6 +267,19 @@
     </div>
   </div>
 </div>
+<script>
+var button = document.getElementById('myButton');
+  button.addEventListener('click', function() {
+    var alertElement = document.getElementById('alert');
+    if (alertElement) {
+      alertElement.style.display = 'block';
+      setTimeout(function() {
+        alertElement.style.display = 'none';
+      }, 5000);
+    }
+  });
+</script>
+
 <script>
   function myFunction() {
       var x = document.getElementById("InputPassword1");

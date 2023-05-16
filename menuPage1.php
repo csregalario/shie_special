@@ -29,23 +29,6 @@ body{
     min-height: 100vh;
     width: 100%;
 }
-.header{
-    text-align: center;
-    margin: auto;
-    color: white!important;
-}
-.menu{
-    color: white!important;
-    text-align: center;
-    margin: auto;
-}
-.pancit{
-    color: white!important;
-    text-align: left;
-}
-.list{
-    text-align: left;
-}
 .navbar-toggler {
         border: 0;
       }
@@ -125,7 +108,7 @@ body{
             <a class="nav-link" aria-current="page" href="home2.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " href="#">Menu</a>
+            <a class="nav-link " href="menuPage1.php">Menu</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">About Us</a>
@@ -149,7 +132,7 @@ body{
                     <h5 class="modal-title" id="logoutModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="logout">
                     Are you sure you want to log out?
                 </div>
                 <div class="modal-footer">
@@ -162,8 +145,22 @@ body{
   </nav>
   <div class="container">
     <div class="row">
+      <div class="col-3">
+
+      </div>
+      <div class="col-6 mt-5">
+        <form class="d-flex" role="search" action="?search" method="GET">
+          <div class="input-group">
+            <input type="search" class="form-control" name="search" placeholder="Search..." aria-label="Search"><button class="btn btn-warning" type="submit">Search</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
         <div class="col-12 bg-transparent border-info" style="color: black;">
-        <h2 class="mt-3" style="background: white; text-align: center; font-family: 'helvetica', serif;">Pancit Malabon</h2>
+        <h2 class="mt-3" style="background: white; text-align: center; font-family: 'helvetica', serif;">Shie's Special Menu</h2>
         <div class="container-fluid">
             <?php
 if (isset($_GET['search'])) {
@@ -174,8 +171,8 @@ if (isset($_GET['search'])) {
     ON p.price_id = i.price_id
     JOIN category c
     ON i.cat_id = c.cat_id
-    WHERE i.item_stats = 'A';
-    AND i.item_name = '{$searchkey}'";
+    WHERE i.item_stats = 'A'
+    AND (c.category_name LIKE '%{$searchkey}%' OR i.item_name LIKE '%{$searchkey}%')";
 } else {
     $sql = "SELECT i.item_id, i.item_name, i.item_file, i.item_size, p.price_amount, c.category_description, c.cat_file, c.category_name FROM item i JOIN price p ON p.price_id = i.price_id JOIN category c ON i.cat_id = c.cat_id WHERE i.item_stats = 'A';";
 }
@@ -189,7 +186,7 @@ $category = $stmt->fetchALL(PDO::FETCH_ASSOC);
 ?>
   <div class="col-md-3 border border-white ms-5" style="background: white; margin: 10px;">
   <div class="item mt-3">
-    <img src="<?php echo "img/" . $row['cat_file']; ?>" alt="<?php echo $row['category_name']; ?>" style="border: solid blue 2px; max-width: 100%;">
+    <img src="<?php echo "img/" . $row['cat_file']; ?>" alt="<?php echo $row['category_name']; ?>" style="border: solid black 2px; max-width: 100%;">
     <div class="overlay">
       <div class="caption">
         <h3><?php echo $row['category_name']; ?></h3>
@@ -197,21 +194,25 @@ $category = $stmt->fetchALL(PDO::FETCH_ASSOC);
         <p><?php echo "Serving size option" ?></p>
         <select name="size" id="size" onchange="displayPrice()">
         <option value="option">Choose an option</option>
-        <?php
-//fetch the item sizes from the database
-$stmt = $pdo->prepare("SELECT DISTINCT item_size FROM item");
-$stmt->execute();
-$item_sizes = $stmt->fetchALL(PDO::FETCH_COLUMN);
-
-//loop through the item sizes and populate the <select> element
-foreach ($item_sizes as $item_size) {
-    echo "<option value='$item_size'>$item_size</option>";
-}
-?>
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
       </select>
-      <div id="small" style="display:none;">Small</div>
-      <div id="medium" style="display:none;">Medium</div>
-      <div id="large" style="display:none;">Large</div>
+      <p id="small" style="display:none;">Good for sharing between 2-4 people. <br>Price: &#x20B1;200.00</p>
+     <p id="medium" style="display:none;">Good for sharing between 6-9 people. <br>Price: &#x20B1;400.00</p>
+     <p id="large" style="display:none;">Good for sharing between 6-9 people. <br>Price: &#x20B1;800.00</p>
+
+     <!--Function to get the price of an item size from the database-->
+     <?php function getPrice($size) {
+      global $conn;
+      $stmt = $conn->prepare("SELECT p.price_amount, i.item_size FROM item i JOIN price p ON p.price_id = i.price_id WHERE item_size =?");
+      $stmt->bind_param("s", $size);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $row = $result->fetch_assoc();
+      return $row['price_amount'];
+     } ?>
+      <!--connection --> 
         <form action="displayCart.php" method="post">
           <input type="hidden" name="item_id" value="<?php echo $row['item_id']; ?>"/>
           <span><b>Quantity:</b></span>
@@ -233,19 +234,17 @@ foreach ($item_sizes as $item_size) {
       var size = document.getElementById("size").value;
       if (size == "small") {
         document.getElementById("small").style.display = "block";
-        document.getElementById("medium").style.display = "none";
-        document.getElementById("large").style.display = "none";
-      } else if (size == "medium") {
-        document.getElementById("small").style.display = "none";
-        document.getElementById("medium").style.display = "block";
-      document.getElementById("large").style.display = "none";
-      } else if (size == "large") {
-        document.getElementById("small").style.display = "none";
-        document.getElementById("medium").style.display = "none";
-        document.getElementById("large").style.display = "block";
       } else {
         document.getElementById("small").style.display = "none";
+      }v
+      if (size == "medium") {
+        document.getElementById("medium").style.display = "block";
+      } else {
         document.getElementById("medium").style.display = "none";
+      }
+      if (size == "large") {
+        document.getElementById("large").style.display = "block";
+      } else {
         document.getElementById("large").style.display = "none";
       }
     }

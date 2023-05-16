@@ -1,3 +1,8 @@
+
+<?php
+    include_once 'connection.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/bootstrap.css">
-    <title>Home</title>
+    <title>Order List</title>
     <style>
         *{
         padding: 0;
@@ -117,9 +122,9 @@
     }
     }
     </style>
+
 </head>
 <body>
-<form action="login_process.php" method="post">
 <div class="bg-image"
   style="background-image: url('dk.jpg');">
   <nav class="navbar navbar-expand-lg bg-warning bg-opacity-75">
@@ -172,34 +177,98 @@
         </div>
     </div>
   </nav>
+  <div class="container-fluid">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10 p-3 mb-2 bg-light opacity-75 border border-white mt-5" style=" color: black;">
+            
+            <!-- Displaying the ordered record list -->
+            <div class="row ">
+                    <div class="col-10">
+                        <h2>PENDING PURCHASE</h2>
+                    </div>
+            </div>
+            <?php
+                    // Retrieve user ID to use on the query
+                    if (isset($_SESSION['user_id'])) {
+                        // User is logged in, retrieve user ID from session 
+                        $user_id = $_SESSION['user_id'];
+                    } else {
+                        // User is not logged in, redirect to login page
+                        header("Location: home1.php");
+                        exit;
+                    }
+                    $order_status = 'P';
+                    $table = "reservation";
+                    $field = "order_ref_number";
+                    // Perform the join query
+                    $query = "SELECT i.item_id,
+                              i.item_name,
+                              c.category_name, 
+                              s.size, 
+                              p.item_price, 
+                              r.item_quantity, 
+                              r.user_id, 
+                              r.order_status, 
+                              r.order_ref_number, 
+                              r.date_ordered, 
+                              r.pickup_date
+                    FROM reservation r
+                    JOIN item i ON i.item_id = r.item_id
+                    JOIN category c ON c.cat_id = r.cat_id
+                    JOIN sizes s ON s.size_id = r.size_id
+                    JOIN price p ON p.price_id = r.price_id
+                    WHERE r.user_id = $user_id
+                        AND r.order_status = 'P'
+                        ORDER BY r.reservation_id DESC";
 
-    <div class="container-fluid-mt-0">
-      <div class="row">
-        <div class="col-lg-7 col-sm-12 position-relative mb-0 mt-3 ">
-          <img src="crop.png" alt="Pancit Malabon" class="crop">
+                    $result = mysqli_query($conn, $query);
+
+                    // Check if the query was successful
+                    if ($result && mysqli_num_rows($result) > 0) {
+                        // Display the order list
+                        echo "<table class='table table-bordered'>";
+                        echo "<thead>";   
+                        echo "<tr>";  
+                        echo "<th class='white-text'>Reference Number</th>"; 
+                        echo "<th class='white-text'>Item Name</th>";   
+                        echo "<th class='white-text'>Category Name</th>";  
+                        echo "<th class='white-text'>Size</th>"; 
+                        echo "<th class='white-text'>Quantity</th>";     
+                        echo "<th class='white-text'>Price</th>";    
+                        echo "<th class='white-text'>Date Ordered</th>";    
+                        echo "<th class='white-text'>Pickup Date</th>"; 
+                        echo "<th class='white-text'>Order Status</th>";   
+                        echo "</tr>";   
+                        echo "</thead>";    
+                        echo "<tbody>";
+                        while ($row = mysqli_fetch_assoc($result)) { 
+                            echo "<tr>";    
+                            echo "<td class='white-text'>" . $row['order_ref_number'] . "</td>";
+                            echo "<td class='white-text'>" . $row['item_name'] . "</td>";  
+                            echo "<td class='white-text'>" . $row['category_name'] . "</td>"; 
+                            echo "<td class='white-text'>" . $row['size'] . "</td>"; 
+                            echo "<td class='white-text'>" . $row['item_quantity'] . "</td>"; 
+                            echo "<td class='white-text'>" . $row['item_price'] . "</td>"; 
+                            echo "<td class='white-text'>" . $row['date_ordered'] . "</td>";
+                            echo "<td class='white-text'>" . $row['pickup_date'] . "</td>";
+                            echo "<td class='white-text'>" . $row['order_status'] . "</td>";
+                            echo "</tr>";
+                        }  
+                        echo "</tbody>";
+                        echo "</table>";
+                    } 
+                    //  else {
+                    //     // If the query was empty, display a message
+                    //     echo "<br>" . "PURCHASE HISTORY IS EMPTY" . "<br>" . "<br>";
+                    // }
+                ?>
+                <a class="btn btn-primary me-5" href="menuPage.php">back</a> 
+            </div>
+            <div class="col-1"></div>
         </div>
-        <div class="col-lg-5 col-xs-12 mb-2 mt-0">
-        <?php if(isset($_GET['msg'])){ ?>
- <div id="alert" class="alert-warning alert"><?php echo $_GET['msg'];?></div>
-     <?php }?>
-            <img src="brand.png" alt="">
-            <div class="text-center">
-        <a href="menuPage.php" class="btn btn-warning mt-4 orderNow" style="font-size: 20px; color: white;">ORDER NOW</a>
-        </div>
-        </div>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
-<script>
-  setTimeout(function() {
-    var alertElement = document.getElementById('alert');
-    if (alertElement) {
-      alertElement.remove();
-    }
-  }, 5000);
-</script>
-<script src="js/bootstrap.js"></script>
+                
 </body>
+<script src="bootstrap/js/bootstrap.js"></script>
 </html>

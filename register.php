@@ -15,6 +15,8 @@
     padding-top: 50px;
     padding-bottom: 50px;
     border-radius: 1%;
+    width: 1000px;
+    opacity: 0.8;
      }
      *{
         padding: 0;
@@ -144,6 +146,10 @@
         right: 0;
         padding: 1em;
       }
+      #cAccount {
+        width: 200px;
+        font-size: 20px;
+      }
 
   </style>
 
@@ -166,19 +172,23 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="home1.php">Home</a>
           </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link " href="#">Menu</a>
+          </li> -->
           <li class="nav-item">
-            <a class="nav-link " href="menu1.php">Menu</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About Us</a>
+            <a class="nav-link" href="about1.php">About Us</a>
           </li>
         </ul>
     </nav>
   <div class="container" id="daform" >
-    <form action="register_process.php" method="post">
-      <div class="container-fluid " id="heaad">
-        <p> Register your Account</p>
-      </div>
+    <!--form -->
+    <form action="register_pros.php" method="post">
+      <div class="container-fluid" id="heaad">
+        <h2> Register your Account</h2>
+        <?php if(isset($_GET['msg'])){ ?>
+ <div class="alert-warning alert"><?php echo $_GET['msg'];?></div>
+     <?php }?>
+      </div> 
   <div>
     <div class="row">
       <div class="col mb-4">
@@ -210,7 +220,7 @@
     <input type="password" id="password" name="password" class="form-control" required/>
     <input type="checkbox" onclick="myFunction()">Show Password
   </div>
-  <button type="submit" class="btn btn-primary btn-sm">Create Account</button>
+  <button type="submit" class="btn btn-warning" id="cAccount">Create Account</button>
 </form>
 
   </div>

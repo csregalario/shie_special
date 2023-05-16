@@ -138,7 +138,7 @@
             <a class="nav-link active" aria-current="page" href="home1.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " href="menu1.php">Menu</a>
+            <a class="nav-link " href="#">Menu</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">About Us</a>
@@ -153,18 +153,18 @@
             <!--Login -->
         <div class="col-lg-7 bg-light bg-opacity-75 mt-3">
           <div class="myform" id="login">
-              <form action="login_process.php" method="post">
+              <form action="login_process2.php" method="post">
                   <div class="mb-3 mt-4">
                       <label for="InputEmail1" class="form-label" ></label>
-                      <input type="email" class="form-control" id="InputEmail1" name="email_add" placeholder="Email or phone number" aria-describedby="emailHelp" required>
+                      <input type="email" class="form-control" id="InputEmail1" name="f_user" placeholder="Username" aria-describedby="emailHelp" required>
                   </div>
                   <div class="mb-3">
                       <label for="InputPassword1" class="form-label"></label>
-                      <input type="password" class="form-control" id="InputPassword1" name="password" placeholder="Password" required>
+                      <input type="password" class="form-control" id="InputPassword1" name="f_pass" placeholder="Password" required>
                       <input type="checkbox" onclick="myFunction()">Show Password
                   </div>
                   <div class="text-center">
-                  <button type="submit" class="btn mt-3">Log In</button>
+                  <button type="submit" class="btn mt-3 text-center">Log In</button>
                   <hr>
                   <button type="submit" class="btn mt-3">Create new account</button>
                   </div>

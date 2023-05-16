@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $email = $_POST['email'];
   $pass = $_POST['pass'];
     
-  
   // Prepare SQL statement to retrieve user information from the database
   $sql = "SELECT *
             FROM user WHERE email_add ='$email'
@@ -24,9 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //fetch user information from the result set
     $row = $chk_user[0];
 
+    $_SESSION['user_id'] = $row['user_id'];
     if($row['user_type'] == 'A') {
         //Admin user
-        if($row['password'] === $pass) {
+        if($row ['password'] === $pass) {
             //Store user ID and user type in session variables
             $_SESSION['user'] = array(
                 //"username" => $row['username'],
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   } else { // if($row['user_type'] == 'C') {
     //Client user
-    if($row['password'] === $pass) {
+    if($row ['password'] === $pass) {
       $user_id = $row['user_id'];
       $user_type = $row['user_type'];
         //Store user ID and user type in session variables
