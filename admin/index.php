@@ -113,8 +113,10 @@ body{
                                 <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['email_add'])): ?>
                                     <h6 class="display-6">@<?php echo $_SESSION['user']['email_add']; ?></h6>
                                 <?php endif; ?>
-                                <a href="#" class="btn btn-link">Profile</a> ◉
-                                <a href="?signout" class="btn btn-link">Sign out</a> 
+                            </div>
+
+                                <a href="profile" class="btn btn">Profile</a> ◉
+                                <a href="signout" class="btn btn">Sign out</a> 
                              </div>
                           </div>
                  </div>
