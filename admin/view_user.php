@@ -64,7 +64,6 @@
                             echo "<th>User Type</th>";
                             echo "<th>User Status</th>";
                             echo "<th>Date Added</th>";
-                            echo "<th>Update</th>";
                             echo "<th>Remove</th>";
                             
 
@@ -78,10 +77,8 @@
                         echo "<td>" . $row['contact_num'] . "</td>";
                         echo "<td>" . $row['user_type'] . "</td>";
                         echo "<td>" . $row['user_stats'] . "</td>";
-                        echo "<td>" . (isset($row['date_added']) ? $row['date_added'] : '') . "</td>";
+                        echo "<td>" . (isset($row['date_added']) ? date('y-m-d', strtotime($row['date_added'])) : '?') . "</td>";
                         
-
-                            echo "<td> <a class='btn btn-success' href='view_user_submit.php?password=" . $row['password'] . "&fname=" .$row['fname'] . "&lname=" .$row['lname'] .  "&user_id=". $row['user_id'] . "&address=". $row['address'] . "&contact_num=" . $row['contact_num'] . "&user_type=" . $row['user_type'] . "' > 🔘 </a> </td>";
                             echo "<td> <a class='btn btn-danger' href='view_user_delete.php?user_id=". $row['user_id'] ." ' > 🔘 </a> </td>";
                             
                         echo "</tr>";

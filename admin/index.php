@@ -1,4 +1,4 @@
-﻿﻿<?php 
+﻿<?php 
 session_start();
 include_once "connection.php"; 
 
@@ -101,6 +101,19 @@ body{
 </style>
 
 <body>
+<?php
+if (isset($_GET['msg'])) {
+    $successMessage = $_GET['msg'];
+}
+
+// Check if the order was confirmed and redirect to "Received Orders" section
+if (isset($_GET['confirm_pending_orders']) && isset($_GET['status']) && $_GET['status'] === 'confirmed') {
+    header("location: index.php?received");
+    exit();
+}
+
+// Output the HTML markup after the header() function
+?>
   <div class="container-fluid">
      <div class="row">
            <div class="px-0 bg-transparent text-dark col-md-4col-lg-3 d-none d-md-block sidebar h-100">
@@ -113,10 +126,8 @@ body{
                                 <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['email_add'])): ?>
                                     <h6 class="display-6">@<?php echo $_SESSION['user']['email_add']; ?></h6>
                                 <?php endif; ?>
-                            </div>
-
-                                <a href="profile" class="btn btn">Profile</a> ◉
-                                <a href="signout" class="btn btn">Sign out</a> 
+                                <a href="#" class="btn btn-link">Profile</a> ◉
+                                <a href="?signout" class="btn btn-link">Sign out</a> 
                              </div>
                           </div>
                  </div>
@@ -134,7 +145,6 @@ body{
                                 <div class="card-body accordion-content">
                                     <!-- Manage Orders -->
                                     <ul style="list-style: none;">
-                                        <li><a href="?vieworders">View All Orders</a></li>
                                         <li><a href="?confirm_pending_orders">Confirm Pending Orders</a></li>
                                         <li><a href="?received">Received Orders</a></li>
                                     </ul>
@@ -203,178 +213,182 @@ body{
         </div>
     </div>
 
-
-
-            <!-- contents-->
-            <?php
-                if (isset($_POST['search'])) {
-                    $k = htmlentities($_POST['search']);
-                    $reservation_sql = "SELECT r.order_ref_number AS order_ref_number,
-                                                 u.fname AS fname,
-                                                 u.lname AS lname,
-                                                 u.address AS address,
-                                                 u.contact_num AS contact_num,
-                                                 CAST(r.date_ordered AS date) AS date_ordered,
-                                                 COUNT(*) AS order_count
-                                          FROM reservation r
-                                          INNER JOIN user u ON r.user_id = u.user_id
-                                          WHERE (r.order_ref_number = '$k' OR CONCAT(u.fname, ' ', u.lname) LIKE '%$k%')
-                                              AND r.order_status = 'some_value'
-                                              GROUP BY r.order_ref_number,
-                                                       u.fname,
-                                                       u.lname,
-                                                       u.address,
-                                                       u.contact_num,
-                                                       CAST(r.date_ordered AS date)";
-                    } else {
-                        $reservation_sql = "SELECT r.order_ref_number AS order_ref_number,
-                                                    u.fname AS fname,
-                                                    u.lname AS lname,
-                                                    u.address AS address,
-                                                    u.contact_num AS contact_num,
-                                                    CAST(r.date_ordered AS date) AS date_ordered,
-                                                    COUNT(*) AS order_count
-                                             FROM reservation r
-                                             INNER JOIN user u ON r.user_id = u.user_id
-                                             WHERE r.order_status = 'D' -- set value for order_status
-                                             GROUP BY r.order_ref_number,
-                                                      u.fname,
-                                                      u.lname,
-                                                      u.address,
-                                                      u.contact_num,
-                                                      CAST(r.date_ordered AS date)
-                                             ORDER BY r.date_ordered DESC
-                                             LIMIT 50";
-                    }
-
-                    $sql_itemize = "SELECT i.item_id,
-                                           i.item_name,
-                                           i.item_file,
-                                           r.reservation_id,
-                                           pr.item_price,
-                                           r.item_quantity
+         <!-- contents-->
+        <?php
+            if (isset($_POST['search'])) {
+                $k = htmlentities($_POST['search']);
+                $reservation_sql = "SELECT r.order_ref_number AS order_ref_number,
+                                            u.fname AS fname,
+                                            u.lname AS lname,
+                                            u.address AS address,
+                                            u.contact_num AS contact_num,
+                                            CAST(r.date_ordered AS date) AS date_ordered,
+                                            COUNT(*) AS order_count
                                     FROM reservation r
-                                    INNER JOIN item i ON r.item_id = i.item_id
-                                    INNER JOIN price pr ON r.price_id = pr.price_id
-                                    WHERE r.order_status = 'some_status'
-                                      AND r.order_ref_number = 'some_reference_number'
-                                    LIMIT 0, 25";
+                                    INNER JOIN user u ON r.user_id = u.user_id
+                                    WHERE (r.order_ref_number = '$k' OR CONCAT(u.fname, ' ', u.lname) LIKE '%$k%')
+                                        AND r.order_status = ?
+                                    GROUP BY r.order_ref_number,
+                                            u.fname,
+                                            u.lname,
+                                            u.address,
+                                            u.contact_num,
+                                            CAST(r.date_ordered AS date)";
+            } else {
+                $reservation_sql = "SELECT r.order_ref_number AS order_ref_number,
+                                            u.fname AS fname,
+                                            u.lname AS lname,
+                                            u.address AS address,
+                                            u.contact_num AS contact_num,
+                                            CAST(r.date_ordered AS date) AS date_ordered,
+                                            COUNT(*) AS order_count
+                                    FROM reservation r
+                                    INNER JOIN user u ON r.user_id = u.user_id
+                                    WHERE r.order_status = ?
+                                    GROUP BY r.order_ref_number,
+                                            u.fname,
+                                            u.lname,
+                                            u.address,
+                                            u.contact_num,
+                                            CAST(r.date_ordered AS date)
+                                    ORDER BY r.date_ordered DESC
+                                    LIMIT 50";
+            }
 
+            $sql_itemize = "SELECT i.item_id,
+                                    i.item_name,
+                                    i.item_file,
+                                    r.reservation_id,
+                                    pr.item_price,
+                                    r.item_quantity
+                            FROM reservation r
+                            INNER JOIN item i ON r.item_id = i.item_id
+                            INNER JOIN price pr ON r.price_id = pr.price_id
+                            WHERE r.order_status = ?
+                                AND r.order_ref_number = ?";
+
+        ?>
+
+        <form action="" method="POST">
+            <div class="col-7 text-center bg-transparent mx-auto my-3">
+                <div class="input-group mb-3 w-50">
+                    <input type="search" required name="search"
+                        value="<?php if (isset($_POST['search'])) {
+                            echo $_POST['search'];
+                        } else {
+                            echo "";
+                        } ?>" placeholder="ORDER REFERENCE NUMBER or Full Name"
+                        class="form-control">
+                    <input type="hidden" name="reservation" class="form-control">
+                    <button class="btn btn-outline-primary">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <?php
+        if (isset($_GET['msg'])) {
+            $successMessage = $_GET['msg'];
+        }
+
+        if (isset($_GET['user'])) {
+            include_once "view_user.php";
+        }
+
+        /* Reports */
+        if (isset($_GET['sales'])) {
+            include_once "sales_report.php";
+        }
+        /* Orders */
+        if (isset($_GET['orders'])) {
+            include_once "orders.php";
+        }
+
+        if (isset($_GET['confirm_pending_orders'])) {
+            // Check if the order was confirmed and redirect to "Received Orders" section
+            if (isset($_GET['status']) && $_GET['status'] === 'confirmed') {
+                header("location: index.php?received");
+                exit();
+            }
+            
+            ?>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-7 mx-auto my-3 text-light">
+                        <h3 class="display-6">Confirm Pending Orders</h3>
+                        <?php admin_retrieve_orders($conn, $reservation_sql, $sql_itemize, 'P', 'E'); ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+
+        if (isset($_GET['received'])) {
+            ?>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-7 mx-auto my-3 text-light">
+                        <h3 class="display-6">Received</h3>
+                        <?php admin_retrieve_orders($conn, $reservation_sql, $sql_itemize, 'R', 'E'); ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+
+        if (isset($successMessage)) {
+            ?>
+            <div class="alert alert-success"><?php echo $successMessage; ?></div>
+            <?php
+        }
+
+        /* Items */
+        if (isset($_GET['additem'])) {
+            include_once "add_item.php";
+        }
+
+        if (isset($_GET['viewitem'])) {
+            if (isset($_GET['deacitem'])) {
+                $item = htmlentities($_GET['deacitem']);
+                $fields = array("item_status" => 'D');
+                $filter = array("item_id" => $item);
+                if (update($conn, "item", $fields, $filter)) {
                     ?>
-
-                    <form action="" method="POST">
-                        <div class="col-7 text-center bg-transparent mx-auto my-3 border border-dark">
-                            <div class="input-group mb-3 w-50">
-                                <input type="search" required name="search"
-                                       value="<?php if (isset($_POST['search'])) {
-                                           echo $_POST['search'];
-                                       } else {
-                                           echo "";
-                                       } ?>" placeholder="ORDER REFERENCE NUMBER or Full Name"
-                                       class="form-control">
-                                <input type="hidden" name="orders" class="form-control">
-                                <button class="btn btn-outline-primary">Search</button>
-                            </div>
-
-                        </div>
-                    </form>
-
-
-                    <?php 
-if (isset($_GET['msg'])) {
-    ?>
-    <div class="alert alert-success"><?php echo $_GET['msg']; ?></div>
-<?php }
-if(isset($_GET['user'])){
-                include_once "view_user.php";
+                    <div class="alert alert-danger mb-0">Item Deactivated</div>
+                    <?php
                 }
+            }
+            if (isset($_GET['reacitem'])) {
+                $item = htmlentities($_GET['reacitem']);
+                $fields = array("item_status" => 'A');
+                $filter = array("item_id" => $item);
+                if (update($conn, "item", $fields, $filter)) {
+                    ?>
+                    <div class="alert alert-success mb-0">Item Reactivated</div>
+                    <?php
+                }
+            }
+            if ($_GET['viewitem'] == '2') {
+                include_once "view_item_tiled.php";
+            } else {
+                include_once "view_item.php";
+            }
+        }
 
-/* Reports */
-if(isset($_GET['sales'])){
-    include_once "sales_report.php";
-}
-/* Orders */
-if(isset($_GET['orders'])){ 
-    include_once "view_orders.php";
-}
-if(isset($_GET['confirm_pending_orders'])){  
-    ?>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-7 mx-auto my-3 text-light">
-                <h3 class="display-6">Confirm Pending Orders</h3> 
-                <?php 
-                admin_retrieve_orders($conn, $reservation_sql, $sql_itemize, 'P', 'E'); 
-                ?>
-            </div>
-        </div>
-    </div>
-    <?php 
-}
+        if (isset($_GET['updateitem'])) {
+            $item_id = htmlentities($_GET['updateitem']);
+            include_once "update_item.php";
+        }
+        ?>
 
-if(isset($_GET['received'])){ 
-    ?>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-7 mx-auto my-3 text-light">
-                <h3 class="display-6">Received</h3> 
-                <?php 
-                admin_retrieve_orders($conn, $reservation_sql, $sql_itemize, 'D', 'E'); 
-                ?>
-            </div>
-        </div>
-    </div>
-    <?php 
-}
-
-/* Items */
-if(isset($_GET['additem'])){
-    include_once "add_item.php";
-}
-if(isset($_GET['viewitem'])){
-    if(isset($_GET['deacitem'])){ 
-        $item = htmlentities($_GET['deacitem']);
-        $fields = array("item_status" => 'D');
-        $filter = array("item_id" => $item);
-        if(update($conn, "item", $fields, $filter)){ 
-            ?>
-            <div class="alert alert-danger mb-0">Item Deactivated</div>
-            <?php 
-        } 
-    }
-    if(isset($_GET['reacitem'])){ 
-        $item = htmlentities($_GET['reacitem']);
-        $fields = array("item_status" => 'A');
-        $filter = array("item_id" => $item);
-        if(update($conn, "item", $fields, $filter)){ 
-            ?>
-            <div class="alert alert-success mb-0">Item Reactivated</div>
-            <?php 
-        } 
-    }
-    if($_GET['viewitem'] == '2'){
-        include_once "view_item_tiled.php";
-    }
-    else{
-        include_once "view_item.php";
-    }
-}
-
-if(isset($_GET['updateitem'])){
-    $item_id = htmlentities($_GET['updateitem']);
-    include_once "update_item.php";
-}
-?>
-
-         
-<!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <!-- Link to jQuery -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <!-- Link to Bootstrap JS -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/bootstrap.bundle.min.js"></script>
-</body>
+                
+        <!-- Bootstrap JS -->
+            <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+            <!-- Link to jQuery -->
+            <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+            <!-- Link to Bootstrap JS -->
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

@@ -1,4 +1,4 @@
-<?php if(isset($_GET['orders'])) { 
+<?php if(isset($_GET['reservation'])) { 
 //      $order_sql = " select o.order_ref_number order_ref_number
 //                                           , u.fullname         fullname
 //                                           , u.shipping_address shipping_address
@@ -50,27 +50,19 @@
 <ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link active position-relative" id="pendingOrders-tab" data-bs-toggle="tab" data-bs-target="#pendingOrders" type="button" role="tab" aria-controls="pendingOrders" aria-selected="true">
-         <span class="position-absolute translate-middle start-100 top-25 badge rounded-pill bg-danger">
-                           <?php echo admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'P' , 'C');?>
-                       </span>
-                               <span class="">Pending</span>
-    </button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link position-relative" id="ofd-tab" data-bs-toggle="tab" data-bs-target="#ofd" type="button" role="tab" aria-controls="ofd" aria-selected="false">
-             <span class="position-absolute translate-middle start-100 top-25 badge rounded-pill bg-danger">
-                           <?php echo admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'O' , 'C');?>
-                       </span>
-        <span class="">Picked Up </span>
+      <span class="position-absolute translate-middle start-100 top-25 badge rounded-pill bg-danger">
+        <?php echo admin_retrieve_orders($conn, $reservation_sql,$sql_itemize, 'P' , 'C');?>
+      </span>
+      <span class="">Pending</span>
     </button>
   </li>
   
   <li class="nav-item" role="presentation">
     <button class="nav-link position-relative" id="delivered-tab" data-bs-toggle="tab" data-bs-target="#delivered" type="button" role="tab" aria-controls="delivered" aria-selected="false">
-             <span class="position-absolute translate-middle start-100 top-25 badge rounded-pill bg-danger">
-                           <?php echo admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'D' , 'C');?>
-                       </span>
-        <span class="">Delivered</span>
+      <span class="position-absolute translate-middle start-100 top-25 badge rounded-pill bg-danger">
+        <?php echo admin_retrieve_orders($conn, $reservation_sql,$sql_itemize, 'R' , 'C');?>
+      </span>
+      <span class="">Delivered</span>
     </button>
   </li>
 </ul>
@@ -79,20 +71,13 @@
 <div class="tab-content">
   <div class="tab-pane active" id="pendingOrders" role="tabpanel" aria-labelledby="pendingOrders-tab" tabindex="0">
      <?php
-       admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'P' , 'V');
+       admin_retrieve_orders($conn, $reservation_sql,$sql_itemize, 'P' , 'V');
       ?>
       
   </div>
-
   <div class="tab-pane" id="delivered" role="tabpanel" aria-labelledby="delivered-tab" tabindex="0">
        <?php
-       admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'D', 'V');
-      ?>
-      
-  </div>
-  <div class="tab-pane" id="ofd" role="tabpanel" aria-labelledby="ofd-tab" tabindex="0">
-       <?php
-       admin_retrieve_orders($conn, $order_sql,$sql_itemize, 'O' , 'V');
+       admin_retrieve_orders($conn, $reservation_sql,$sql_itemize, 'R', 'V');
       ?>
       
   </div>
